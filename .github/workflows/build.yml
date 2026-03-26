@@ -13,6 +13,6 @@ jobs:
       - run: nix build .#lab-manager-iso
       - uses: actions/upload-artifact@v6
         with:
-          name: lab-manager.iso
+          name: lab-manager-iso
           path: result/iso/*
           compression-level: 0
