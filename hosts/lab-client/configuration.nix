@@ -104,6 +104,8 @@
     environment.systemPackages = [
       pkgs.cage
       pkgs.freerdp
+      pkgs.nano
+      pkgs.vim
     ];
   };
 

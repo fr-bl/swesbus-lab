@@ -78,5 +78,6 @@ in {
     pkgs.freerdp
     pkgs.nano
     targetConfig.system.build.toplevel # Bundle target configuration
+    pkgs.vim
   ];
 }
