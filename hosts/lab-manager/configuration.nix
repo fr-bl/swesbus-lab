@@ -45,7 +45,7 @@
       cat ${pkgs.writeText "lab-help-text" labHelp}
     '';
 in {
-  imports = [(modulesPath + "/installer/cd-dvd/iso-image.nix")];
+  imports = [(modulesPath + "/installer/cd-dvd/iso-image.nix") ./hardware-configuration.nix];
 
   # System
   networking.hostName = "lab-manager";
@@ -80,6 +80,9 @@ in {
     makeEfiBootable = true;
     makeUsbBootable = true;
   };
+
+  # Graphics
+  hardware.graphics.enable = true;
 
   # Packages
   environment.systemPackages = [
