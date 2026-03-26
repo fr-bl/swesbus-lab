@@ -2,6 +2,7 @@ name: "Build Lab Manager ISO"
 
 on:
   push:
+  workflow_dispatch:
 
 jobs:
   build_lab_manager_iso:
