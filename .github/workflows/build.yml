@@ -1,0 +1,17 @@
+name: "Build Lab Manager ISO"
+
+on:
+  push:
+
+jobs:
+  build_lab_manager_iso:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: cachix/install-nix-action@v31
+      - run: nix build .#lab-manager-iso
+      - uses: actions/upload-artifact@v6
+        with:
+          name: lab-manager.iso
+          path: result/iso/*
+          compression-level: 0
