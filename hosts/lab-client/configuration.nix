@@ -23,16 +23,11 @@
     # System
     networking.hostName = config.lab.client.hostName;
     system.stateVersion = "25.11";
+    environment.etc."nixos".source = self.outPath;
 
     nix.settings = {
       experimental-features = ["nix-command" "flakes"];
       trusted-users = ["@wheel"];
-    };
-
-    environment.etc."nixos" = {
-      source = self.outPath;
-      mode = "0660";
-      group = "wheel";
     };
 
     # Users

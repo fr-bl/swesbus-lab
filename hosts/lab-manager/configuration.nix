@@ -16,12 +16,7 @@ in {
   # System
   networking.hostName = "lab-manager";
   system.stateVersion = "25.11";
-
-  environment.etc."nixos" = {
-    source = self.outPath;
-    mode = "0660";
-    group = "wheel";
-  };
+  environment.etc."nixos".source = self.outPath;
 
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
@@ -45,17 +40,21 @@ in {
       To set up a wireless connection, run:
       > nmtui
 
+      To copy and enter the client configuration, run:
+      > cp --recursive --no-preserve all /etc/nixos swesbus-lab
+      > cd swesbus-lab
+
       To read the documentation, run:
-      > less /etc/nixos/README.md
+      > less README.md
 
       To edit the client configuration, run:
-      > nano /etc/nixos/hosts/lab-client/configuration.nix
+      > nano hosts/lab-client/configuration.nix
 
       To list available disks, run:
       > sudo lsblk -l
 
       To install the client with index 1 to disk "sda", run:
-      > disko-install --flake /etc/nixos#lab-client-1 --disk main /dev/sda
+      > disko-install --flake .#lab-client-1 --disk main /dev/sda
       This will *irrevocably* erase all data on that disk!
 
       To reboot the system, run:

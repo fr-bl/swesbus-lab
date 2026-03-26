@@ -23,19 +23,26 @@ configuration.
 
 #### With Lab Manager
 
-1. Modify the default client configuration:
+1. Copy and enter the system configuration:
 
 ```sh
-nano /etc/nixos/hosts/lab-client/configuration.nix
+cp --recursive --no-preserve all /etc/nixos swesbus-lab
+cd swesbus-lab
 ```
 
-2. Build a custom Lab Manager ISO:
+2. Modify the default client configuration:
 
 ```sh
-nix build nix build /etc/nixos#lab-manager-iso
+nano hosts/lab-client/configuration.nix
 ```
 
-3. The generated ISO can be found at `result/iso/`.
+3. Build a custom Lab Manager ISO:
+
+```sh
+nix build nix build .#lab-manager-iso
+```
+
+4. The generated ISO can be found at `result/iso/`.
 
 #### With GitHub actions
 
