@@ -4,25 +4,25 @@
   pkgs,
   self,
   ...
-}: {
+}: let
+    replaceVariables = builtins.replaceStrings ["$index"] [(toString config.remote.index)];
+    jsonConfig = builtins.mapAttrs (_: replaceVariables) (builtins.fromJSON (builtins.readFile ./configuration.json));
+in {
   # Client
   networking.hostName = "lab-client-${toString config.remote.index}";
   users.users.admin.name = "admin";
-  users.users.admin.password = "onion-refresh-unsorted";
+  users.users.admin.password = "admin";
 
   # RDP connection
   remote.enable = true;
-  remote.host = "192.168.10.219";
-  remote.user.name = "User ${toString config.remote.index}";
-  remote.user.password = "123";
+  remote.host = jsonConfig.rdp_host;
+  remote.user.name = jsonConfig.rdp_user;
+  remote.user.password = jsonConfig.rdp_password;
   remote.extraArguments = ["/cert:ignore" "+f"];
 
   # WiFi
-  networking.networkmanager.ensureProfiles.profiles.lab.wifi.ssid = "GESLAB_SWEDRU SCHOOL OF BUSINESS";
-  networking.networkmanager.ensureProfiles.profiles.lab.wifi-security.psk = "geslab.moc_swedruschoolofbusiness";
-
-  networking.wireless.networks.lab.ssid = "GESLAB_SWEDRU SCHOOL OF BUSINESS";
-  networking.wireless.networks.lab.psk = "geslab.moc_swedruschoolofbusiness";
+  networking.networkmanager.ensureProfiles.profiles.lab.wifi.ssid = jsonConfig.wifi_ssid;
+  networking.networkmanager.ensureProfiles.profiles.lab.wifi-security.psk = jsonConfig.wifi_password;
 
   # Partitions
   disko.devices.disk.main.device = "/dev/mmcblk0";
@@ -32,9 +32,10 @@
   # Packages
   # Find more on https://search.nixos.org/packages
   environment.systemPackages = [
-    pkgs.cage
-    pkgs.freerdp
     pkgs.git
+    pkgs.python3
+
+    # Editors
     pkgs.helix
     pkgs.nano
     pkgs.vim

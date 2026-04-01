@@ -1,0 +1,7 @@
+{
+  "rdp_host": "192.168.10.219",
+  "rdp_user": "User $index",
+  "rdp_password": "123",
+  "wifi_ssid": "GESLAB_SWEDRU SCHOOL OF BUSINESS",
+  "wifi_password": "geslab.moc_swedruschoolofbusiness"
+}

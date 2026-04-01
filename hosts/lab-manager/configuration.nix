@@ -68,11 +68,13 @@ in {
   # Packages
   environment.systemPackages = [
     diskoPkgs.disko
+    selfPkgs.lab-help
     pkgs.git
+
+    # Editors
     pkgs.helix
     pkgs.nano
     pkgs.vim
-    selfPkgs.lab-help
 
     # Bundle store paths
     clientConfig.system.build.toplevel

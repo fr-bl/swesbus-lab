@@ -18,6 +18,8 @@ in {
     };
 
     # Users
+    users.groups.nopasswdlogin = {};
+    
     users.users.admin = {
       description = "Admin";
       isNormalUser = true;
@@ -27,6 +29,7 @@ in {
     users.users.remote = {
       description = "Remote Session";
       isNormalUser = true;
+      extraGroups = ["nopasswdlogin"];
       hashedPassword = "";
     };
 
@@ -38,6 +41,10 @@ in {
       defaultSession = "lab-remote-session";
       autoLogin.user = "remote";
     };
+
+    security.pam.services.gdm-password.text = ''
+      auth sufficient pam_succeed_if.so user ingroup nopasswdlogin
+    '';
 
     systemd.services.display-manager = {
       wants = ["network-online.target"];
