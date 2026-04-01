@@ -4,49 +4,48 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
 
-    flake-parts = {
-      url = "github:hercules-ci/flake-parts";
-      inputs.nixpkgs-lib.follows = "nixpkgs";
-    };
-
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = inputs @ {flake-parts, ...}:
-    flake-parts.lib.mkFlake {inherit inputs;}
-    ({self, ...}: {
-      systems = ["x86_64-linux"];
+  outputs = inputs @ {
+    nixpkgs,
+    self,
+    ...
+  }: let
+    lib = nixpkgs.lib;
+    specialArgs = {inherit inputs self;};
+    client-indices = lib.range 1 50;
+    pkgs = nixpkgs.legacyPackages.x86_64-linux;
+  in {
+    packages.x86_64-linux = {
+      lab-manager-iso = self.nixosConfigurations.lab-manager.config.system.build.isoImage;
+      lab-help = pkgs.callPackage ./packages/lab-help {labHelpSource = ./README.md;};
+    };
 
-      perSystem = {
-        lib,
-        self',
-        system,
-        ...
-      }: let
-        specialArgs = {inherit inputs self;};
-        client-indices = lib.range 1 50;
-      in {
-        packages.lab-manager-iso = self'.legacyPackages.nixosConfigurations.lab-manager.config.system.build.isoImage;
+    nixosModules = {
+      remote = ./modules/remote;
+      silentBoot = ./modules/silentBoot;
+      zswap = ./modules/zswap;
+    };
 
-        legacyPackages.nixosConfigurations =
-          {
-            lab-manager = lib.nixosSystem {
-              inherit system specialArgs;
-              modules = [./hosts/lab-manager/configuration.nix];
-            };
-          }
-          // builtins.listToAttrs (map (client-index: let
-            hostName = "lab-client-${toString client-index}";
-            labModule = {lab.client.index = client-index;};
-          in
-            lib.nameValuePair hostName (lib.nixosSystem {
-              inherit system specialArgs;
-              modules = [./hosts/lab-client/configuration.nix labModule];
-            }))
-          client-indices);
-      };
-    });
+    nixosConfigurations =
+      {
+        lab-manager = lib.nixosSystem {
+          inherit specialArgs;
+          modules = [./hosts/lab-manager/configuration.nix];
+        };
+      }
+      // builtins.listToAttrs (map (index: let
+        hostName = "lab-client-${toString index}";
+        labModule = {remote.index = index;};
+      in
+        lib.nameValuePair hostName (lib.nixosSystem {
+          inherit specialArgs;
+          modules = [./hosts/lab-client/configuration.nix labModule];
+        }))
+      client-indices);
+  };
 }

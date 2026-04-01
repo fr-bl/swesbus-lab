@@ -1,5 +1,4 @@
 {
-  config,
   inputs,
   modulesPath,
   pkgs,
@@ -7,47 +6,13 @@
   ...
 }: let
   inherit (pkgs.stdenv.hostPlatform) system;
+  selfPkgs = self.packages.${system};
   diskoPkgs = inputs.disko.packages.${system};
-  clientConfig = self.legacyPackages.${system}.nixosConfigurations.lab-client-1.config;
-
-  labHelp = ''
-    To set up a wireless connection, run:
-    > nmtui
-
-    To copy and enter the client configuration, run:
-    > cp --recursive --no-preserve all /etc/nixos swesbus-lab
-    > cd swesbus-lab
-
-    To read the documentation, run:
-    > less README.md
-
-    To edit the client configuration, run:
-    > nano hosts/lab-client/configuration.nix
-
-    To list available disks, run:
-    > sudo lsblk -l
-
-    To install the client with index 1 to disk "sda", run:
-    > disko-install --flake .#lab-client-1 --disk main /dev/sda
-    This will *irrevocably* erase all data on that disk!
-
-    To reboot the system, run:
-    > sudo reboot
-
-    To show this message again, run:
-    > lab-help
-  '';
-
-  labHelpBin =
-    pkgs.writeShellScriptBin "lab-help"
-    # bash
-    ''
-      cat ${pkgs.writeText "lab-help-text" labHelp}
-    '';
+  clientConfig = self.nixosConfigurations.lab-client-1.config;
 in {
   imports = [(modulesPath + "/installer/cd-dvd/iso-image.nix") ./hardware-configuration.nix];
 
-  # System
+  # Nix
   networking.hostName = "lab-manager";
   system.stateVersion = "25.11";
   environment.etc."nixos".source = self.outPath;
@@ -68,8 +33,7 @@ in {
 
   services.getty = {
     autologinUser = "admin";
-    greetingLine = "Welcome to the lab manager - ${config.system.nixos.distroName} ${config.system.nixos.label} (\m) - \l";
-    helpLine = labHelp;
+    helpLine = "Run 'lab-help lab-manager' for the Swedru Lab manual.";
   };
 
   # Networking
@@ -81,17 +45,16 @@ in {
     makeUsbBootable = true;
   };
 
-  # Graphics
-  hardware.graphics.enable = true;
-
   # Packages
   environment.systemPackages = [
-    diskoPkgs.disko # Disk partitioning
-    labHelpBin
-    pkgs.cage
-    pkgs.freerdp
+    diskoPkgs.disko
+    pkgs.helix
     pkgs.nano
     pkgs.vim
-    clientConfig.system.build.toplevel # Bundle target configuration
+    selfPkgs.lab-help
+
+    # Bundle store paths
+    clientConfig.system.build.toplevel
+    clientConfig.system.build.destroyFormatMount
   ];
 }

@@ -1,0 +1,32 @@
+body {
+  margin: 2em auto;
+  max-width: 70ch;
+
+  font-family: system-ui, sans-serif;
+  font-size: 1.2rem;
+  color: #111;
+}
+
+h1 {
+  text-align: center;
+}
+
+h2 {
+  font-size: 1.4em;
+  padding: 0.2em 0;
+  border-bottom: 3px solid #eee;
+}
+
+code {
+  background-color: #eee;
+  padding: 0 1ch;
+}
+
+pre {
+  background-color: #eee;
+  padding: 1ch;
+}
+
+pre > code {
+  all: unset;
+}
