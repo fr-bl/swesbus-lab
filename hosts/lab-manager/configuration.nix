@@ -31,7 +31,7 @@ in {
   };
 
   security.sudo.wheelNeedsPassword = false;
-  services.getty.helpLine = "Run 'lab-help lab-manager' for the Swedru Lab manual.";
+  services.getty.helpLine = "Run 'lab-help' for the Swedru Lab manual.";
 
   # Desktop
   services.displayManager.gdm.enable = true;

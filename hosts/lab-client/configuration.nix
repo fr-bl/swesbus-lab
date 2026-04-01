@@ -12,7 +12,7 @@
 
   # RDP connection
   remote.enable = true;
-  remote.host = "192.168.10.10";
+  remote.host = "192.168.10.219";
   remote.user.name = "User ${toString config.remote.index}";
   remote.user.password = "123";
   remote.extraArguments = ["/cert:ignore" "+f"];

@@ -24,10 +24,27 @@ in {
       extraGroups = ["wheel"];
     };
 
-    services.getty.helpLine = "Run 'lab-help lab-manager' for the Swedru Lab manual.";
+    users.users.remote = {
+      description = "Remote Session";
+      isNormalUser = true;
+      hashedPassword = "";
+    };
+
+    services.getty.helpLine = "Run 'lab-help' for the Swedru Lab manual.";
+
+    # Login
+    services.displayManager = {
+      gdm.enable = true;
+      defaultSession = "lab-remote-session";
+      autoLogin.user = "remote";
+    };
+
+    systemd.services.display-manager = {
+      wants = ["network-online.target"];
+      after = ["network-online.target"];
+    };
 
     # Desktop
-    services.displayManager.gdm.enable = true;
     services.desktopManager.gnome.enable = true;
     services.gnome.core-developer-tools.enable = false;
     services.gnome.games.enable = false;

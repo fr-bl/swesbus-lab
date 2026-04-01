@@ -22,6 +22,17 @@
     name = "lab-remote-session";
     paths = [connectionScript desktopItem];
   };
+
+  sessionDesktopItem = pkgs.makeDesktopItem {
+    name = "lab-remote-session";
+    desktopName = "Remote Session";
+    genericName = "RDP Client";
+    comment = "Connect to the RDP server using FreeRDP.";
+    exec = "${lib.getExe pkgs.cage} -s -- lab-remote-session";
+    categories = ["System"];
+    destination = "/share/wayland-sessions";
+    derivationArgs.passthru.providedSessions = [ "lab-remote-session" ];
+  };
 in {
   options.remote = {
     enable = lib.mkEnableOption "RDP client";
@@ -55,29 +66,13 @@ in {
       type = lib.types.package;
       description = "The package that starts the RDP session.";
     };
-
-    cage = lib.mkEnableOption "starting to Cage";
   };
 
   config = lib.mkIf cfg.enable {
     remote.package = package;
 
-    users.users.remote.isNormalUser = true;
-
-    services.cage = {
-      enable = true;
-      user = "remote";
-      extraArguments = ["-s"];
-      program = lib.getExe cfg.package;
-    };
-
-    systemd.services."cage-tty1" = {
-      wants = ["network-online.target"];
-      after = ["network-online.target"];
-    };
-
     hardware.graphics.enable = true;
 
-    environment.systemPackages = [cfg.package];
+    environment.systemPackages = [cfg.package sessionDesktopItem];
   };
 }
