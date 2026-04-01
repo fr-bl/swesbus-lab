@@ -1,4 +1,12 @@
-{self, ...}: {
+{
+  config,
+  pkgs,
+  self,
+  ...
+}: let
+  inherit (pkgs.stdenv.hostPlatform) system;
+  selfPkgs = self.packages.${system};
+in {
   config = {
     # Nix
     system.stateVersion = "25.11";
@@ -9,20 +17,45 @@
       trusted-users = ["@wheel"];
     };
 
+    # Users
+    users.users.admin = {
+      description = "Admin";
+      isNormalUser = true;
+      extraGroups = ["wheel"];
+    };
+
+    services.getty.helpLine = "Run 'lab-help lab-manager' for the Swedru Lab manual.";
+
+    # Desktop
+    services.displayManager.gdm.enable = true;
+    services.desktopManager.gnome.enable = true;
+    services.gnome.core-developer-tools.enable = false;
+    services.gnome.games.enable = false;
+
     # Security
     security.polkit.enable = true;
+
+    # Network
+    networking.networkmanager.ensureProfiles.profiles.lab = {
+      connection = {
+        autoconnect = "true";
+        id = config.networking.networkmanager.ensureProfiles.profiles.lab.wifi.ssid;
+        interface-name = "wlp2s0";
+        type = "wifi";
+      };
+
+      ipv4.method = "auto";
+      ipv6.method = "auto";
+
+      wifi.mode = "infrastructure";
+      wifi-security.key-mgmt = "wpa-psk";
+    };
 
     # SSH
     services.fail2ban.enable = true;
     services.openssh = {
       enable = true;
       settings.AllowUsers = ["admin"];
-    };
-
-    # Users
-    users.users.admin = {
-      isNormalUser = true;
-      extraGroups = ["wheel"];
     };
 
     # Boot
@@ -39,5 +72,8 @@
       max_pool_percent = 25;
       shrinker_enabled = true;
     };
+
+    # Programs
+    environment.systemPackages = [selfPkgs.lab-help];
   };
 }

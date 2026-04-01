@@ -30,7 +30,7 @@ configuration.
 1. Copy and enter the system configuration:
 
 ```sh
-$ cp --recursive --no-preserve all /etc/nixos swesbus-lab
+$ cp --dereference --recursive --no-preserve all /etc/nixos swesbus-lab
 $ cd swesbus-lab
 ```
 
@@ -74,7 +74,7 @@ $ nmtui
 To copy and enter the client configuration, run:
 
 ```sh
-$ cp --recursive --no-preserve all /etc/nixos swesbus-lab
+$ cp --dereference --recursive --no-preserve all /etc/nixos swesbus-lab
 $ cd swesbus-lab
 ```
 

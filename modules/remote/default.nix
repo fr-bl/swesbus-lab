@@ -7,7 +7,21 @@
   cfg = config.remote;
 
   arguments = ["${pkgs.freerdp}/bin/xfreerdp" "/v:${cfg.host}" "/u:${cfg.user.name}" "/p:${cfg.user.password}"] ++ cfg.extraArguments;
-  package = pkgs.writeShellScript "lab-client-connect" (lib.escapeShellArgs arguments);
+  connectionScript = pkgs.writeShellScriptBin "lab-remote-session" (lib.escapeShellArgs arguments);
+
+  desktopItem = pkgs.makeDesktopItem {
+    name = "lab-remote-session";
+    desktopName = "Remote Session";
+    genericName = "RDP Client";
+    comment = "Connect to the RDP server using FreeRDP.";
+    exec = "lab-remote-session";
+    categories = ["System"];
+  };
+
+  package = pkgs.symlinkJoin {
+    name = "lab-remote-session";
+    paths = [connectionScript desktopItem];
+  };
 in {
   options.remote = {
     enable = lib.mkEnableOption "RDP client";
@@ -41,6 +55,8 @@ in {
       type = lib.types.package;
       description = "The package that starts the RDP session.";
     };
+
+    cage = lib.mkEnableOption "starting to Cage";
   };
 
   config = lib.mkIf cfg.enable {
@@ -52,7 +68,7 @@ in {
       enable = true;
       user = "remote";
       extraArguments = ["-s"];
-      program = cfg.package;
+      program = lib.getExe cfg.package;
     };
 
     systemd.services."cage-tty1" = {
@@ -61,5 +77,7 @@ in {
     };
 
     hardware.graphics.enable = true;
+
+    environment.systemPackages = [cfg.package];
   };
 }

@@ -5,8 +5,10 @@
   # Dependencies
   bash,
   lib,
+  makeDesktopItem,
   md4c,
   runCommand,
+  symlinkJoin,
   w3m-nographics,
   ...
 }: let
@@ -17,9 +19,10 @@
       "html-css" = "style.css";
     }
     // md2htmlOptions;
+
   md2htmlShell = lib.cli.toCommandLineShellGNU {} md2htmlFinalOptions;
-in
-  runCommand "lab-help" {} ''
+
+  helpScript = runCommand "lab-help" {} ''
     shopt -s extglob globstar
 
     mkdir --parents md html
@@ -39,4 +42,21 @@ in
     cp --recursive md html $out/share/lab-help
 
     install -D lab-help $out/bin/lab-help
-  ''
+  '';
+
+  desktopItem = makeDesktopItem {
+    name = "lab-help";
+    desktopName = "Swesbus Lab Manual";
+    genericName = "System Manual";
+    comment = "View the Swesbus Lab in a web browser";
+    exec = "lab-help";
+    categories = ["System"];
+  };
+in
+  symlinkJoin {
+    name = "lab-help";
+    paths = [
+      helpScript
+      desktopItem
+    ];
+  }

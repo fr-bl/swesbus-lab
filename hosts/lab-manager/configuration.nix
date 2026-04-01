@@ -1,4 +1,5 @@
 {
+  config,
   inputs,
   modulesPath,
   pkgs,
@@ -30,14 +31,33 @@ in {
   };
 
   security.sudo.wheelNeedsPassword = false;
+  services.getty.helpLine = "Run 'lab-help lab-manager' for the Swedru Lab manual.";
 
-  services.getty = {
-    autologinUser = "admin";
-    helpLine = "Run 'lab-help lab-manager' for the Swedru Lab manual.";
+  # Desktop
+  services.displayManager.gdm.enable = true;
+  services.displayManager.autoLogin.user = "admin";
+  services.desktopManager.gnome.enable = true;
+  services.gnome.core-developer-tools.enable = false;
+  services.gnome.games.enable = false;
+
+  # Network
+  networking.networkmanager.ensureProfiles.profiles.lab = {
+    connection = {
+      autoconnect = "true";
+      id = config.networking.networkmanager.ensureProfiles.profiles.lab.wifi.ssid;
+      interface-name = "wlp2s0";
+      type = "wifi";
+    };
+
+    ipv4.method = "auto";
+    ipv6.method = "auto";
+
+    wifi.mode = "infrastructure";
+    wifi.ssid = "GESLAB_SWEDRU SCHOOL OF BUSINESS";
+
+    wifi-security.key-mgmt = "wpa-psk";
+    wifi-security.psk = "geslab.moc_swedruschoolofbusiness";
   };
-
-  # Networking
-  networking.networkmanager.enable = true;
 
   # Image
   isoImage = {
@@ -48,9 +68,7 @@ in {
   # Packages
   environment.systemPackages = [
     diskoPkgs.disko
-    pkgs.helix
     pkgs.nano
-    pkgs.vim
     selfPkgs.lab-help
 
     # Bundle store paths

@@ -18,7 +18,9 @@
   remote.extraArguments = ["/cert:ignore" "+f"];
 
   # WiFi
-  networking.wireless.enable = true;
+  networking.networkmanager.ensureProfiles.profiles.lab.wifi.ssid = "GESLAB_SWEDRU SCHOOL OF BUSINESS";
+  networking.networkmanager.ensureProfiles.profiles.lab.wifi-security.psk = "geslab.moc_swedruschoolofbusiness";
+
   networking.wireless.networks.lab.ssid = "GESLAB_SWEDRU SCHOOL OF BUSINESS";
   networking.wireless.networks.lab.psk = "geslab.moc_swedruschoolofbusiness";
 
