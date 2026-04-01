@@ -12,6 +12,13 @@
     # Security
     security.polkit.enable = true;
 
+    # SSH
+    services.fail2ban.enable = true;
+    services.openssh = {
+      enable = true;
+      settings.AllowUsers = ["admin"];
+    };
+
     # Users
     users.users.admin = {
       isNormalUser = true;

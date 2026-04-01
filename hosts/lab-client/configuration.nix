@@ -8,7 +8,7 @@
   # Client
   networking.hostName = "lab-client-${toString config.remote.index}";
   users.users.admin.name = "admin";
-  users.users.admin.password = "take-care";
+  users.users.admin.password = "onion-refresh-unsorted";
 
   # RDP connection
   remote.enable = true;
