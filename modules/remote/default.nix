@@ -23,16 +23,18 @@
     paths = [connectionScript desktopItem];
   };
 
-  sessionDesktopItem = pkgs.makeDesktopItem {
-    name = "lab-remote-session";
-    desktopName = "Remote Session";
-    genericName = "RDP Client";
-    comment = "Connect to the RDP server using FreeRDP.";
-    exec = "${lib.getExe pkgs.cage} -s -- lab-remote-session";
-    categories = ["System"];
-    destination = "/share/wayland-sessions";
-    derivationArgs.passthru.providedSessions = [ "lab-remote-session" ];
-  };
+  sessionPackage =
+    (pkgs.makeDesktopItem {
+      name = "lab-remote-session";
+      desktopName = "Remote Session";
+      genericName = "RDP Client";
+      comment = "Connect to the RDP server using FreeRDP.";
+      exec = "${lib.getExe pkgs.cage} -s -- lab-remote-session";
+      categories = ["System"];
+      destination = "/share/wayland-sessions";
+    }).overrideAttrs {
+      passthru.providedSessions = ["lab-remote-session"];
+    };
 in {
   options.remote = {
     enable = lib.mkEnableOption "RDP client";
@@ -72,7 +74,7 @@ in {
     remote.package = package;
 
     hardware.graphics.enable = true;
-
-    environment.systemPackages = [cfg.package sessionDesktopItem];
+    environment.systemPackages = [cfg.package];
+    services.displayManager.sessionPackages = [sessionPackage];
   };
 }
