@@ -68,7 +68,10 @@ in {
   # Packages
   environment.systemPackages = [
     diskoPkgs.disko
+    pkgs.git
+    pkgs.helix
     pkgs.nano
+    pkgs.vim
     selfPkgs.lab-help
 
     # Bundle store paths

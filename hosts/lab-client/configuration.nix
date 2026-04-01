@@ -34,6 +34,7 @@
   environment.systemPackages = [
     pkgs.cage
     pkgs.freerdp
+    pkgs.git
     pkgs.helix
     pkgs.nano
     pkgs.vim
