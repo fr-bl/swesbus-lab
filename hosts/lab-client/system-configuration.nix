@@ -63,6 +63,7 @@ in {
     networking.networkmanager.ensureProfiles.profiles.lab = {
       connection = {
         autoconnect = "true";
+        autoconnect-priority = "10";
         id = config.networking.networkmanager.ensureProfiles.profiles.lab.wifi.ssid;
         interface-name = "wlp2s0";
         type = "wifi";
@@ -73,6 +74,17 @@ in {
 
       wifi.mode = "infrastructure";
       wifi-security.key-mgmt = "wpa-psk";
+    };
+
+    systemd.services.connect-lab-wifi = {
+      description = "Enable WiFi interface";
+      wantedBy = [ "network.target" ];
+      after = [ "NetworkManager.service" ];
+
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${pkgs.networkmanager}/bin/nmcli radio wifi on";
+      };
     };
 
     # SSH
