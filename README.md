@@ -5,6 +5,7 @@
 - [About this manual](#manual)
 - [Obtaining the Lab Manager ISO](#iso)
 - [Using the Lab Manager](#lab-manager)
+- [Using the Lab Client](#lab-client)
 
 <h2 id="manual">About this manual</h2>
 
@@ -25,36 +26,33 @@ The latest Lab Manager ISO can be downloaded [from GitHub actions](https://night
 A custom Lab Manager ISO can be built to modify the default client
 configuration.
 
+#### With GitHub Actions
+
+Fork the [GitHub repository](https://github.com/fr-bl/swesbus-lab/fork). Then, modify the default client configuration at
+   `hosts/lab-client/configuration.nix`. Run the "Build" Action and download its artifact when after it finishes.
+
 #### With Lab Manager
 
-1. Copy and enter the system configuration:
+To copy the current configuration to a local directory, run:
 
 ```sh
 $ cp --dereference --recursive --no-preserve all /etc/nixos swesbus-lab
 $ cd swesbus-lab
 ```
 
-2. Modify the default client configuration:
+To edit the client configuration, open `hosts/lab-client/configuration.nix` in a text editor or run:
 
 ```sh
 $ nano hosts/lab-client/configuration.nix
 ```
 
-3. Build a custom Lab Manager ISO:
+To build a custom Lab Manager ISO, run:
 
 ```sh
 $ nix build nix build .#lab-manager-iso
 ```
 
-4. The generated ISO can be found at `result/iso/`.
-
-#### With GitHub Actions
-
-1. Fork the [GitHub repository](https://github.com/fr-bl/swesbus-lab/fork).
-2. Modify the default client configuration at
-   `hosts/lab-client/configuration.nix`.
-3. Run the "Build" Action.
-4. After the Action finished, download its artifact.
+The generated ISO can be found at `result/iso/`.
 
 <h2 id="lab-manager">Using the Lab Manager</h2>
 
@@ -71,14 +69,14 @@ $ nmtui
 
 ### Configuration
 
-To copy and enter the client configuration, run:
+To copy the current configuration to a local directory, run:
 
 ```sh
 $ cp --dereference --recursive --no-preserve all /etc/nixos swesbus-lab
 $ cd swesbus-lab
 ```
 
-To edit the client configuration, run:
+To edit the client configuration, open `hosts/lab-client/configuration.nix` in a text editor or run:
 
 ```sh
 $ nano hosts/lab-client/configuration.nix
@@ -117,4 +115,29 @@ To power off the system instead, run:
 
 ```sh
 $ shutdown now
+```
+
+<h2 id="lab-client">Using the Lab Client</h2>
+
+The Lab Client is a thin client that automatically connects to an RDP server. It can be installed using the [Lab Manager](#lab-manager).
+
+### Configuration
+
+To copy the current configuration to a local directory, run:
+
+```sh
+$ cp --dereference --recursive --no-preserve all /etc/nixos swesbus-lab
+$ cd swesbus-lab
+```
+
+To edit the client configuration, open `hosts/lab-client/configuration.nix` in a text editor or run:
+
+```sh
+$ nano hosts/lab-client/configuration.nix
+```
+
+To apply the client configuration, run:
+
+```sh
+$ sudo nixos-rebuild switch --flake .
 ```
