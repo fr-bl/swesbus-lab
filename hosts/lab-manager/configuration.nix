@@ -11,7 +11,7 @@
   diskoPkgs = inputs.disko.packages.${system};
   clientConfig = self.nixosConfigurations.lab-client-1.config;
 in {
-  imports = [(modulesPath + "/installer/cd-dvd/iso-image.nix") ./hardware-configuration.nix];
+  imports = [(modulesPath + "/installer/cd-dvd/iso-image.nix") ./hardware-configuration.nix inputs.home-manager.nixosModules.home-manager];
 
   # Nix
   networking.hostName = "lab-manager";
@@ -31,12 +31,20 @@ in {
   };
 
   security.sudo.wheelNeedsPassword = false;
-  services.getty.helpLine = "Run 'lab-help' for the Swedru Lab manual.";
+  services.getty.helpLine = "Run 'lab-help' for the Swesbus Lab manual.";
+
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    users.admin = self.homeModules.adminConfiguration;
+    extraSpecialArgs = {inherit inputs self;};
+  };
 
   # Desktop
   services.displayManager.gdm.enable = true;
   services.displayManager.autoLogin.user = "admin";
   services.desktopManager.gnome.enable = true;
+  services.gnome.core-apps.enable = false;
   services.gnome.core-developer-tools.enable = false;
   services.gnome.games.enable = false;
 
@@ -67,12 +75,16 @@ in {
 
   # Packages
   environment.systemPackages = [
-    diskoPkgs.disko
+    # Apps
     selfPkgs.lab-help
-    pkgs.git
+    pkgs.gnome-user-docs
+    pkgs.ephiphany # Web browser
+    pkgs.ghostty # Terminal
+    pkgs.nautilus # Files
 
-    # Editors
-    pkgs.helix
+    # Terminal
+    diskoPkgs.disko
+    pkgs.git
     pkgs.nano
     pkgs.vim
 

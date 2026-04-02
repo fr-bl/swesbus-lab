@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   pkgs,
   self,
   ...
@@ -21,7 +22,7 @@ in {
     users.users.admin = {
       description = "Admin";
       isNormalUser = true;
-      extraGroups = ["wheel"];
+      extraGroups = ["networkmanager" "wheel"];
     };
 
     users.users.remote = {
@@ -31,6 +32,13 @@ in {
     };
 
     services.getty.helpLine = "Run 'lab-help' for the Swedru Lab manual.";
+
+    home-manager = {
+      useGlobalPkgs = true;
+      useUserPackages = true;
+      users.admin = self.homeModules.adminConfiguration;
+      extraSpecialArgs = {inherit inputs self;};
+    };
 
     # Login
     services.displayManager = {
@@ -46,6 +54,7 @@ in {
 
     # Desktop
     services.desktopManager.gnome.enable = true;
+    services.gnome.core-apps.enable = false;
     services.gnome.core-developer-tools.enable = false;
     services.gnome.games.enable = false;
 
@@ -71,7 +80,7 @@ in {
 
     systemd.services.connect-lab-wifi = {
       description = "Enable WiFi interface";
-      after = [ "NetworkManager.service" ];
+      after = ["NetworkManager.service"];
 
       serviceConfig = {
         Type = "oneshot";
@@ -102,6 +111,30 @@ in {
     };
 
     # Programs
-    environment.systemPackages = [selfPkgs.lab-help];
+    # Find more on https://search.nixos.org/packages
+    environment.systemPackages = [
+      # Apps
+      selfPkgs.lab-help
+      pkgs.gnome-user-docs
+      pkgs.ephiphany # Web browser
+      pkgs.ghostty # Terminal
+      pkgs.nautilus # Files
+
+      # Terminal
+      pkgs.git
+      pkgs.nano
+      pkgs.vim
+    ];
+
+    # Imports
+    imports = [
+      ./disko-configuration.nix
+      ./hardware-configuration.nix
+      inputs.disko.nixosModules.disko
+      inputs.home-manager.nixosModules.home-manager
+      self.nixosModules.remote
+      self.nixosModules.silentBoot
+      self.nixosModules.zswap
+    ];
   };
 }
