@@ -78,7 +78,7 @@ in {
 
     systemd.services.connect-lab-wifi = {
       description = "Enable WiFi interface";
-      wantedBy = [ "network.target" ];
+      wantedBy = [ "multi-user.target" ];
       after = [ "NetworkManager.service" ];
 
       serviceConfig = {
